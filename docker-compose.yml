@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  client:
+    build:
+      context: ./docker
+      dockerfile: client.Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: ./docker
+      dockerfile: server.Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=mysql://user:password@mysql:3306/sport_ground_reservation
+    depends_on:
+      - mysql
+
+  mysql:
+    build:
+      context: ./docker
+      dockerfile: mysql.Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: sport_ground_reservation
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: rootpassword
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
