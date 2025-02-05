@@ -1,8 +1,0 @@
-npm create vite@4.1.0
-
-project name :
-
-React
-TypeScript
-cd react-app
-npm i install or npm i
